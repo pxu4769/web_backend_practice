@@ -16,6 +16,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
+import dao.MemberDao;
+
 public class LoginServlet extends HttpServlet {
 
 	@Override
@@ -27,16 +29,12 @@ public class LoginServlet extends HttpServlet {
 		BasicDataSource dataSource = (BasicDataSource) application.getAttribute("dataSource");
 
 		try {
-			Connection connection = dataSource.getConnection();
-			String sql = "select count(*) from trpgmember where username=? and password=?";
-			PreparedStatement st = connection.prepareStatement(sql);
-
-			st.setString(1, username);
-			st.setString(2, password);
-			ResultSet rs = st.executeQuery();
-
-			rs.next();
-			if (rs.getInt(1) == 0) {
+			MemberDao dao = new MemberDao();
+			dao.setDataSource(dataSource);
+			String[] key = new String[]{username,password};
+			int result=dao.selectForCount(key);
+			
+			if (result == 0) {
 				request.setAttribute("msg", "驗證不通過");
 			} else {
 				HttpSession session = request.getSession();
