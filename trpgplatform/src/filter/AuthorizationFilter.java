@@ -19,11 +19,14 @@ public class AuthorizationFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
 		boolean check = false;
+		String sessionId = request.getSession().getId();
 		Cookie[] cookies = request.getCookies();
 		for (Cookie c : cookies) {
 			if (c.getName().equals("trpg")) {
-				check = true;
-				break;
+				if (sessionId.equals(c.getValue())) {
+					check = true;
+					break;
+				}
 			}
 		}
 		if (check) {
