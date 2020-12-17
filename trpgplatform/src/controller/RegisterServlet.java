@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
+import bean.Member;
+import dao.MemberDao;
+
 public class RegisterServlet extends HttpServlet{
 
 	@Override
@@ -24,16 +27,14 @@ public class RegisterServlet extends HttpServlet{
 		String username=request.getParameter("username");
 		String password=request.getParameter("password");
 		
+		Member member = new Member();
+		member.setUsername(username);
+		member.setPassword(password);
+		
 		try {
-			Connection connection=dataSource.getConnection();
-			String sql="insert into trpgmember(username,password) values(?,?)";
-			PreparedStatement st=connection.prepareStatement(sql);
-			
-			st.setString(1,username);
-			st.setString(2,password);
-			st.execute();
-			
-			connection.close();
+			MemberDao dao = new MemberDao();
+			dao.setDataSource(dataSource);
+			dao.insert(member);
 			
 			request.setAttribute("username", username);
 			request.getRequestDispatcher("showresult.jsp").forward(request,response);
